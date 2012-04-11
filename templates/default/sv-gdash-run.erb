@@ -1,0 +1,5 @@
+#!/bin/sh
+exec 2>&1
+cd <%= node.gdash.base %>
+export RACK_ENV=<%= node.chef_environment %>
+exec chpst -u www-data:www-data -l <%= node.gdash.base %>/lock -- bundle exec bin/rackup -p <%= node.gdash.port %> -E <%= node.chef_environment %> config.ru
