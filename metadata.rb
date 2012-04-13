@@ -13,4 +13,4 @@ end
   depends dep
 end
 
-suggests "iptables"
+depends "iptables"
