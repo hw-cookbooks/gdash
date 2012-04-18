@@ -16,6 +16,7 @@ action :create do
   directory @dashboard_dir do
     owner node.gdash.owner
     group node.gdash.group
+    notifies :restart, 'service[gdash]', :delayed
   end
 
   file @dashboard_yaml do
