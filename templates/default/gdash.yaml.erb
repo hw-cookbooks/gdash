@@ -1,4 +1,4 @@
-:graphite: http://<%= node.gdash.fqdn %>
+:graphite: <%= node.gdash.graphite_url %>
 :templatedir: <%= node.gdash.templatedir %>
 <% if node.gdash.basic_auth -%>
 :username: <%= node.gdash.username %>
