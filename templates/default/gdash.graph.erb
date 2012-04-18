@@ -1,0 +1,9 @@
+# Graph file auto-generated via chef
+
+<% @base_variables.each_pair do |name, value| %>
+<%= name %> <%= value.inspect %>
+<% end %>
+
+<% @fields.each_pair do |name, info| %>
+field '<%= name %>', <%= info.inspect %>
+<% end %>
