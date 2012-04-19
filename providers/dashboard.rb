@@ -13,17 +13,24 @@ end
 
 action :create do
 
-  directory @dashboard_dir do
-    owner node.gdash.owner
-    group node.gdash.group
-    notifies :restart, 'service[gdash]', :delayed
+  @dashboard_dir.sub("#{node.gdash.templatedir}/", '').split('/').inject([node.gdash.templatedir]){|memo,val|
+    memo.push(::File.join(memo.last, val))
+  }.each do |dir_path|
+    directory dir_path do
+      owner node.gdash.owner
+      group node.gdash.group
+      recursive true
+      notifies :restart, resources(:service => 'gdash'), :delayed
+    end
   end
 
   file @dashboard_yaml do
     owner node.gdash.owner
     group node.gdash.group
-    content YAML.dump(:name => new_resource.name,
-                      :description => new_resource.description)
+    content YAML.dump(
+      :name => new_resource.display_name || new_resource.name,
+      :description => new_resource.description
+    )
   end
 
   new_resource.updated_by_last_action(true)
