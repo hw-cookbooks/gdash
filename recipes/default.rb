@@ -52,12 +52,14 @@ execute "bundle" do
   action :nothing
 end
 
-execute "bundle_unicorn" do
-  command 'echo "gem \'unicorn\'" >> Gemfile'
-  user 'www-data'
-  group 'www-data'
-  cwd node.gdash.base
-  action :nothing
+ruby_block "bundle_unicorn" do
+  block do
+    gemfile = Chef::Util::FileEdit.new(
+      File.join(node.gdash.base, 'Gemfile')
+    )
+    gemfile.insert_line_if_no_match(/unicorn/, 'gem "unicorn"')
+    gemfile.write_file
+  end
   notifies :run, resources(:execute => "bundle"), :immediately
   not_if do
     File.exists?(File.join(node.gdash.base, 'Gemfile')) &&
@@ -75,7 +77,7 @@ execute "gdash: untar" do
   creates File.join(node.gdash.base, "Gemfile.lock")
   user "www-data"
   group "www-data"
-  notifies :run, resources(:execute => "bundle_unicorn"), :immediately
+  notifies :create, resources(:ruby_block => "bundle_unicorn"), :immediately
   notifies :delete, resources(:directory => File.join(node.gdash.base, 'graph_templates', 'dashboards')), :immediately
 end
 
