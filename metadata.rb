@@ -8,5 +8,6 @@ version          "0.0.2"
 depends "build-essential"
 depends "runit"
 depends "graphite"
+depends "unicorn"
 
 suggests "iptables"
