@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 include_recipe "build-essential"
+include_recipe "unicorn"
 
 %w[libcurl4-gnutls-dev ruby1.9.1-full].each do |pkg|
   apt_package pkg
@@ -43,7 +44,7 @@ directory File.join(node.gdash.base, "templates") do
 end
 
 execute "bundle" do
-  command "bundle install --deployment --binstubs"
+  command "bundle install --binstubs #{File.join(node.gdash.base, 'bin')} --path #{File.join(node.gdash.base, 'vendor', 'bundle')}"
   user "www-data"
   group "www-data"
   cwd node.gdash.base
@@ -51,18 +52,47 @@ execute "bundle" do
   action :nothing
 end
 
+execute "bundle_unicorn" do
+  command 'echo "gem \'unicorn\'" >> Gemfile'
+  user 'www-data'
+  group 'www-data'
+  cwd node.gdash.base
+  action :nothing
+  notifies :run, resources(:execute => "bundle"), :immediately
+  not_if do
+    File.exists?(File.join(node.gdash.base, 'Gemfile')) &&
+    File.read(File.join(node.gdash.base, 'Gemfile')).include?('unicorn')
+  end
+end
+
+directory File.join(node.gdash.base, 'graph_templates', 'dashboards') do
+  action :nothing
+  recursive true
+end
+
 execute "gdash: untar" do
   command "tar zxf #{node.gdash.tarfile} -C #{node.gdash.base} --strip-components=1"
   creates File.join(node.gdash.base, "Gemfile.lock")
   user "www-data"
   group "www-data"
-  notifies :run, resources(:execute => "bundle"), :immediately
+  notifies :run, resources(:execute => "bundle_unicorn"), :immediately
+  notifies :delete, resources(:directory => File.join(node.gdash.base, 'graph_templates', 'dashboards')), :immediately
 end
 
 template File.join(node.gdash.base, "config", "gdash.yaml") do
   owner "www-data"
   group "www-data"
   notifies :restart, "service[gdash]"
+end
+
+unicorn_config '/etc/unicorn/gdash.app' do
+  listen '9292' => {:backlog => 100}
+  working_directory node.gdash.base
+  worker_timeout 60
+  preload_app false
+  worker_processes 2
+  owner 'root'
+  group 'root'
 end
 
 runit_service "gdash"
