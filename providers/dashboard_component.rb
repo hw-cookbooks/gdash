@@ -11,13 +11,20 @@ end
 
 action :create do
 
-  directory @dashboard_dir do
-    owner node.gdash.owner
-    group node.gdash.group
+  @dashboard_dir.sub("#{node.gdash.templatedir}/", '').split('/').inject([node.gdash.templatedir]){|memo,val|
+    memo.push(::File.join(memo.last, val))
+  }.each do |dir_path|
+    directory dir_path do
+      owner node.gdash.owner
+      group node.gdash.group
+      recursive true
+      notifies :restart, resources(:service => 'gdash'), :delayed
+    end
   end
 
   template ::File.join(@dashboard_dir, "#{new_resource.name}.graph") do
     source 'gdash.graph.erb'
+    cookbook 'gdash'
     template_hash = ::GDASH_RESOURCE_ATTRIBS.map{ |attr|
       if(new_resource.respond_to?(attr) && !new_resource.send(attr).nil?)
         [attr, new_resource.send(attr)]
@@ -32,7 +39,9 @@ action :create do
     mode 0644
     variables(
       :base_variables => template_hash,
-      :fields => new_resource.fields
+      :fields => new_resource.fields || {},
+      :lines => new_resource.lines || [],
+      :forcasts => new_resource.forcasts || {}
     )
     action :create
   end

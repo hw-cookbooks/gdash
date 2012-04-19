@@ -7,3 +7,11 @@
 <% @fields.each_pair do |name, info| %>
 field '<%= name %>', <%= info.inspect %>
 <% end %>
+
+<% @lines.each do |line_hash| %>
+line <%= line_hash.inspect %>
+<% end %>
+
+<% @forcasts.each_pair do |name, info| %>
+forecast '<%= name %>', <%= info.inspect %>
+<% end %> 

@@ -6,10 +6,19 @@ end
 
 actions :create, :delete
 
-attribute :fields, :kind_of => Hash, :required => true
+attribute :lines, :kind_of => Array, :required => false
+
+%w(forcasts fields).each do |attr_hash|
+  attribute attr_hash, :kind_of => Hash, :required => false
+end
 
 %w(dashboard_name dashboard_category).each do |attr_string_req|
   attribute attr_string_req, :kind_of => String, :required => true
+end
+
+hash_attrs = %w(warning critical)
+hash_attrs.each do |attr_hash|
+  attribute attr_hash, :kind_of => String, :required => false
 end
 
 string_attrs = %w(vtitle description major_grid_line_color minor_grid_line_color from until)
@@ -30,5 +39,5 @@ end
 attribute :area, :equal_to => [:all, :first, :none, :stacked], :required => false
 attribute :linemode, :equal_to => %w(slope staircase), :required => false
 
-::GDASH_RESOURCE_ATTRIBS = string_attrs + int_attrs + bool_attrs + %w(area linemode)
+::GDASH_RESOURCE_ATTRIBS = string_attrs + int_attrs + bool_attrs + hash_attrs + %w(area linemode)
 
