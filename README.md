@@ -84,7 +84,9 @@ Dashboard creation via attributes
 
 Alternatively attributes can be used to define the set of dashboards
 and the `attribute_driven_dashboard` recipe can be used to managed the
-dashboards. For example:
+dashboards. The recipe will remove categories, dashboards and dashboard
+components that no longer exist and create all those as specified in
+attributes. For example:
 
 ```ruby
 
