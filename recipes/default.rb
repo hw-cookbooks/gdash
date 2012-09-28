@@ -65,6 +65,7 @@ ruby_block "bundle_unicorn" do
     File.exists?(File.join(node.gdash.base, 'Gemfile')) &&
     File.read(File.join(node.gdash.base, 'Gemfile')).include?('unicorn')
   end
+  action :nothing
 end
 
 directory File.join(node.gdash.base, 'graph_templates', 'dashboards') do
