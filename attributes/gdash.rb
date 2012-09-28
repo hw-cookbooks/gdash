@@ -17,6 +17,7 @@ default.gdash.basic_auth = false
 default.gdash.username = "gdash"
 default.gdash.password = "gdash"
 default.gdash.title = "Dashboard"
+default.gdash.prefix = nil
 default.gdash.refresh_rate = 60
 default.gdash.columns = 2
 default.gdash.graphite_whisperdb = "/opt/graphite/storage/whisper"
