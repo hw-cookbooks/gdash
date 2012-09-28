@@ -21,7 +21,7 @@ hash_attrs.each do |attr_hash|
   attribute attr_hash, :kind_of => String, :required => false
 end
 
-string_attrs = %w(vtitle description major_grid_line_color minor_grid_line_color from until)
+string_attrs = %w(title vtitle description major_grid_line_color minor_grid_line_color from until)
 string_attrs.each do |attr_string|
   attribute attr_string, :kind_of => String, :required => false
 end
