@@ -11,3 +11,9 @@ depends "graphite"
 depends "unicorn"
 
 suggests "iptables"
+
+%w[
+  centos amazon                                                                                                                             
+].each do |os|                                                                                                                              
+  supports os                                                                                                                               
+end
