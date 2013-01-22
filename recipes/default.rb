@@ -19,14 +19,19 @@
 include_recipe "build-essential"
 include_recipe "unicorn"
 
-%w[libcurl4-gnutls-dev ruby1.9.1-full].each do |pkg|
-  apt_package pkg
+case node['platform']
+when 'ubuntu', 'debian'
+  %w[libcurl4-gnutls-dev ruby1.9.1-full].each do |pkg|
+    apt_package pkg
+  end
+when 'amazon'
+  package "libcurl-devel"
 end
 
 gem_package "bundler"
 
 remote_file node.gdash.tarfile do
-  mode "00666"
+  mode "0666"
   owner "www-data"
   group "www-data"
   source node.gdash.url
@@ -98,5 +103,23 @@ unicorn_config '/etc/unicorn/gdash.app' do
   group 'root'
 end
 
-runit_service "gdash"
+case node['platform']
+  when 'ubuntu'
+    runit_service "gdash"
+  when 'amazon'
+    template "/etc/init.d/gdash" do
+      source "gdash-init.erb"
+      owner "www-data"
+      group "www-data"
+      mode "0755"
+    end
+
+    service "gdash" do
+      action [:enable, :stop]
+    end
+
+    service "gdash" do
+      action :start
+    end
+end
 
