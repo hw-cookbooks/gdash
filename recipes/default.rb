@@ -20,12 +20,12 @@ include_recipe "build-essential"
 include_recipe "unicorn"
 
 case node['platform']
-when 'ubuntu', 'debian'
-  %w[libcurl4-gnutls-dev ruby1.9.1-full].each do |pkg|
-    apt_package pkg
-  end
-when 'amazon'
-  package "libcurl-devel"
+  when 'ubuntu', 'debian'
+    %w[libcurl4-gnutls-dev ruby1.9.1-full].each do |pkg|
+      apt_package pkg
+    end
+  when 'amazon'
+    package "libcurl-devel"
 end
 
 gem_package "bundler"
