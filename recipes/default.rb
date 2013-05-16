@@ -26,11 +26,11 @@ end
 gem_package "bundler"
 
 remote_file node.gdash.tarfile do
-  mode "00666"
   owner "www-data"
   group "www-data"
   source node.gdash.url
   action :create_if_missing
+  mode 0644
 end
 
 directory node.gdash.base do
