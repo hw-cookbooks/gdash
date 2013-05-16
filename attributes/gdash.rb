@@ -6,7 +6,7 @@ default.gdash.url = "https://github.com/ripienaar/gdash/tarball/master"
 # WARN: pull in attributes from ANOTHER COOKBOOK
 # TODO: put this in a databag ?
 ####
-include_attribute "graphite::graphite"
+include_attribute "graphite::default"
 default.gdash.graphite_url = "http://#{ipaddress}:#{graphite[:listen_port]}"
 ####
 
