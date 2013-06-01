@@ -18,19 +18,18 @@
 #
 include_recipe "build-essential"
 include_recipe "unicorn"
+include_recipe "runit"
 
 %w[libcurl4-gnutls-dev ruby1.9.1-full].each do |pkg|
-  apt_package pkg
+  package pkg
 end
 
 gem_package "bundler"
 
 remote_file node.gdash.tarfile do
-  mode "00666"
-  owner "www-data"
-  group "www-data"
   source node.gdash.url
   action :create_if_missing
+  mode 0644
 end
 
 directory node.gdash.base do
@@ -89,8 +88,8 @@ template File.join(node.gdash.base, "config", "gdash.yaml") do
 end
 
 unicorn_config '/etc/unicorn/gdash.app' do
-  listen "\"#{node[:gdash][:interface]}:#{node[:gdash][:port]}\"" => {:backlog => 100}
   working_directory node.gdash.base
+  listen({ node.gdash.port => {:backlog => 100} })
   worker_timeout 60
   preload_app false
   worker_processes 2
@@ -98,5 +97,10 @@ unicorn_config '/etc/unicorn/gdash.app' do
   group 'root'
 end
 
-runit_service "gdash"
+# delete the sample graphs
+directory "#{node['gdash']['base']}/graph_templates/node_templates/" do
+  action :delete
+  recursive true
+end
 
+runit_service "gdash"
