@@ -97,5 +97,10 @@ unicorn_config '/etc/unicorn/gdash.app' do
   group 'root'
 end
 
-runit_service "gdash"
+# delete the sample graphs
+directory "#{node['gdash']['base']}/graph_templates/node_templates/" do
+  action :delete
+  recursive true
+end
 
+runit_service "gdash"
