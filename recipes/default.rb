@@ -18,6 +18,7 @@
 #
 include_recipe "build-essential"
 include_recipe "unicorn"
+include_recipe "runit"
 
 %w[libcurl4-gnutls-dev ruby1.9.1-full].each do |pkg|
   package pkg
