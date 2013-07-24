@@ -24,6 +24,7 @@ Attributes
  * `node['gdash']['graphite_whisperdb']` - Full path to graphite
    database
  * `node['gdash']['templatedir']` - Full path to graph templates
+ * `node['gdash']['dashboards']` - Attributes defining the set of dashboards.
 
 Usage
 =====
@@ -74,6 +75,47 @@ gdash_dashboard_component 'node1' do
       :data => 'node1.cpu.0.user.value'
     }
   )
+end
+```
+
+
+Dashboard creation via attributes
+---------------------------------
+
+Alternatively attributes can be used to define the set of dashboards
+and the `attribute_driven_dashboard` recipe can be used to managed the
+dashboards. The recipe will remove categories, dashboards and dashboard
+components that no longer exist and create all those as specified in
+attributes. For example:
+
+```ruby
+
+node.override['gdash']['dashboards']['cpu_usage'] =
+  {
+    'category' => 'metrics',
+    'description' => 'CPU Usages of the nodes across the cluster',
+    'display_name' => 'CPU Usages',
+    'components' => {
+      'node1' => {
+        'linemode' => 'slope',
+        'description' => 'Node1 CPU usage',
+        'fields' => {
+            :system => {
+              :scale => 0.001,
+              :color => 'orange',
+              :alias => 'System Usage 0',
+              :data => 'node1.cpu.0.system.value'
+            },
+            :user => {
+              :scale => 0.001,
+              :color => 'blue',
+              :alias => 'User Usage 0',
+              :data => 'node1.cpu.0.user.value'
+            }
+        }
+      }
+    }
+  }
 end
 ```
 

@@ -24,3 +24,4 @@ default.gdash.graphite_whisperdb = "/opt/graphite/storage/whisper"
 default.gdash.port = 9292
 default.gdash.interface = node[:ipaddress]
 default.gdash.categories = []
+default.gdash.dashboards = Mash.new
