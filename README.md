@@ -2,34 +2,83 @@ Description
 ===========
 
 Cookbook to automatically deploy the Gdash web interface for
-Graphite.
+Graphite. Resources are provided for automated graph and dashboard
+creation.
 
 Requirements
 ============
 
 ## Platform:
 
- * Debian/Ubuntu
+ * Debian
+ * Ubuntu
 
 ## Cookbooks
 
  * build-essentials
  * runit
+ * graphite
+ * unicorn
+ * optional dependency: iptables
 
 Attributes
 ==========
 
- See `attributes/default.rb` for defaults.
+ * `node['gdash']['tarfile']` - Full path to store downloaded tgz
+ * `node['gdash']['base']` - Full path for gdash root
+ * `node['gdash']['url']` - Download url for gdash tarball
+ * `node['gdash']['templatedir']` - Dashboard template directory
+ * `node['gdash']['dashboards']` - Attributes defining the set of dashboards.
+ * `node['gdash']['owner']` - User gdash runs as
+ * `node['gdash']['group']` - Group permission for gdash
+ * `node['gdash']['basic_auth']` - Toggle basic auth setting for
+   dashboard access
+ * `node['gdash']['username']` - Basic auth username
+ * `node['gdash']['password']` - Basic auth password
+ * `node['gdash']['title']` - Dashboard main title
+ * `node['gdash']['refresh_rate']` - Refresh rate
+ * `node['gdash']['columns']` - Number of columns
+ * `node['gdash']['graphite_whisperdb']` - Full path to graphite database
 
- * `node['gdash']['graphite_whisperdb']` - Full path to graphite
-   database
- * `node['gdash']['templatedir']` - Full path to graph templates
+=======
+   whisper database
+ * `node['gdash']['port']` - Port gdash is available on
+ * `node['gdash']['categories']` - Categories to group dashboards into
+
+Resources
+=========
+
+  * gdash_dashboard - Create a dashboard with a category and description
+  * gdash_dashboard_component - Create a graph and add it to a dashboard
+
+Recipes
+=======
+
+default
+-------
+
+The default recipe performs basic setup of gdash and creates a runit
+service definition.
+
+firewall
+--------
+
+The firewall recipe uses iptables to open ports for the dashboard.
+This is optional and requires the iptables cookbook if used.
+
+basic_dashboard
+---------------
+
+The basic_dashboard recipe is intended an example to get up and
+running with gdash and automatic graph creation. Use this recipe and
+the usage description to get started building your own dashboards with
+the resources provided by this cookbook.
 
 Usage
 =====
 
-This cookbook currently sets up gdash and a basic runit service.
-Graph creation is left to the user.
+Graph creation is left to the user but an recipe is provided to
+create a basic dashboard and provide usage examples.
 
 Graph Creation
 ==============
@@ -74,6 +123,47 @@ gdash_dashboard_component 'node1' do
       :data => 'node1.cpu.0.user.value'
     }
   )
+end
+```
+
+
+Dashboard creation via attributes
+---------------------------------
+
+Alternatively attributes can be used to define the set of dashboards
+and the `attribute_driven_dashboard` recipe can be used to managed the
+dashboards. The recipe will remove categories, dashboards and dashboard
+components that no longer exist and create all those as specified in
+attributes. For example:
+
+```ruby
+
+node.override['gdash']['dashboards']['cpu_usage'] =
+  {
+    'category' => 'metrics',
+    'description' => 'CPU Usages of the nodes across the cluster',
+    'display_name' => 'CPU Usages',
+    'components' => {
+      'node1' => {
+        'linemode' => 'slope',
+        'description' => 'Node1 CPU usage',
+        'fields' => {
+            :system => {
+              :scale => 0.001,
+              :color => 'orange',
+              :alias => 'System Usage 0',
+              :data => 'node1.cpu.0.system.value'
+            },
+            :user => {
+              :scale => 0.001,
+              :color => 'blue',
+              :alias => 'User Usage 0',
+              :data => 'node1.cpu.0.user.value'
+            }
+        }
+      }
+    }
+  }
 end
 ```
 
