@@ -2,7 +2,7 @@ require 'yaml'
 
 def load_current_resource
   node.include_attribute "gdash::gdash"
-  node.include_recipe "gdash::default"
+  node.run_context.include_recipe "gdash::default"
 
   @dashboard_dir = ::File.join(node.gdash.templatedir,
                              new_resource.category,
