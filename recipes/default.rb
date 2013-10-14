@@ -20,32 +20,34 @@ include_recipe "build-essential"
 include_recipe "unicorn"
 include_recipe "runit"
 
-%w[libcurl4-gnutls-dev ruby1.9.1-full].each do |pkg|
-  package pkg
+node.gdash.packages.each do |pkg|
+    package pkg
 end
 
 gem_package "bundler"
 
 remote_file node.gdash.tarfile do
+  owner node.gdash.owner
+  group node.gdash.group
   source node.gdash.url
   action :create_if_missing
-  mode 0644
+  mode 00644
 end
 
 directory node.gdash.base do
-  owner "www-data"
-  group "www-data"
+  owner node.gdash.owner
+  group node.gdash.group
 end
 
 directory File.join(node.gdash.base, "templates") do
-  owner "www-data"
-  group "www-data"
+  owner node.gdash.owner
+  group node.gdash.group
 end
 
 execute "bundle" do
   command "bundle install --binstubs #{File.join(node.gdash.base, 'bin')} --path #{File.join(node.gdash.base, 'vendor', 'bundle')}"
-  user "www-data"
-  group "www-data"
+  user node.gdash.owner
+  group node.gdash.group
   cwd node.gdash.base
   creates File.join(node.gdash.base, "bin")
   action :nothing
@@ -75,15 +77,15 @@ end
 execute "gdash: untar" do
   command "tar zxf #{node.gdash.tarfile} -C #{node.gdash.base} --strip-components=1"
   creates File.join(node.gdash.base, "Gemfile.lock")
-  user "www-data"
-  group "www-data"
+  user node.gdash.owner
+  group node.gdash.group
   notifies :create, resources(:ruby_block => "bundle_unicorn"), :immediately
   notifies :delete, resources(:directory => File.join(node.gdash.base, 'graph_templates', 'dashboards')), :immediately
 end
 
 template File.join(node.gdash.base, "config", "gdash.yaml") do
-  owner "www-data"
-  group "www-data"
+  owner node.gdash.owner
+  group node.gdash.group
   notifies :restart, "service[gdash]"
 end
 
@@ -95,6 +97,7 @@ unicorn_config '/etc/unicorn/gdash.app' do
   worker_processes 2
   owner 'root'
   group 'root'
+  pid "#{node.gdash.base}/gdash.pid"
 end
 
 # delete the sample graphs
@@ -103,4 +106,17 @@ directory "#{node['gdash']['base']}/graph_templates/node_templates/" do
   recursive true
 end
 
-runit_service "gdash"
+case node[:platform_family]
+  when "debian"
+    runit_service "gdash"
+  when "rhel"
+    template "/etc/init.d/gdash" do
+      source "gdash_init.erb"
+      owner "root"
+      group "root"
+      mode 00755
+    end
+    service "gdash" do
+      action [ :enable, :start ]
+    end
+end
