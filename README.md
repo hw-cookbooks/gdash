@@ -90,9 +90,12 @@ First create a dashboard:
 
 ```ruby
 
+properties = { :timezone => "Europe/London" }
+
 gdash_dashboard 'cpu_usage' do
   category 'metrics'
   description 'CPU Usages'
+  graph_properties properties
 end
 ```
 
@@ -143,6 +146,9 @@ node.override['gdash']['dashboards']['cpu_usage'] =
     'category' => 'metrics',
     'description' => 'CPU Usages of the nodes across the cluster',
     'display_name' => 'CPU Usages',
+    'graph_properties' => {
+      'timezone' => 'Europe/London'
+    },
     'components' => {
       'node1' => {
         'linemode' => 'slope',

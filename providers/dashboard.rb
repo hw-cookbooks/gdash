@@ -29,7 +29,8 @@ action :create do
     group node.gdash.group
     content YAML.dump(
       :name => new_resource.display_name || new_resource.name,
-      :description => new_resource.description
+      :description => new_resource.description,
+      :graph_properties => new_resource.graph_properties
     )
   end
 
