@@ -20,13 +20,21 @@ include_recipe "build-essential"
 include_recipe "unicorn"
 include_recipe "runit"
 
-%w[libcurl4-gnutls-dev ruby1.9.1-full].each do |pkg|
-  package pkg
+case node['platform']
+  when 'ubuntu', 'debian'
+    %w[libcurl4-gnutls-dev ruby1.9.1-full].each do |pkg|
+      apt_package pkg
+    end
+  when 'amazon'
+    package "libcurl-devel"
 end
 
 gem_package "bundler"
 
 remote_file node.gdash.tarfile do
+  mode "0666"
+  owner "www-data"
+  group "www-data"
   source node.gdash.url
   action :create_if_missing
   mode 0644
@@ -95,6 +103,26 @@ unicorn_config '/etc/unicorn/gdash.app' do
   worker_processes 2
   owner 'root'
   group 'root'
+end
+
+case node['platform']
+  when 'ubuntu'
+    runit_service "gdash"
+  when 'amazon'
+    template "/etc/init.d/gdash" do
+      source "gdash-init.erb"
+      owner "www-data"
+      group "www-data"
+      mode "0755"
+    end
+
+    service "gdash" do
+      action [:enable, :stop]
+    end
+
+    service "gdash" do
+      action :start
+    end
 end
 
 # delete the sample graphs

@@ -21,6 +21,12 @@ end
 
 suggests "iptables"
 
+%w[
+  centos amazon                                                                                                                             
+].each do |os|                                                                                                                              
+  supports os                                                                                                                               
+end
+
 attribute "gdash/tarfile",
   :display_name => "Gdash tarfile",
   :description => "Full path to store downloaded tgz",
