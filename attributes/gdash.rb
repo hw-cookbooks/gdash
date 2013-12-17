@@ -19,8 +19,8 @@ case node.platform_family
     default.gdash.group = "www-data"
   when "rhel"
     default.gdash.packages = %w( libcurl-devel ruby )
-    default.gdash.owner = "apache"
-    default.gdash.group = "apache"
+    default.gdash.owner = "nobody"
+    default.gdash.group = "nobody"
 end
 
 default.gdash.basic_auth = false
