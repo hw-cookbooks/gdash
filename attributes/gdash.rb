@@ -12,15 +12,15 @@ default.gdash.graphite_url = "http://#{ipaddress}:#{graphite[:listen_port]}"
 
 default.gdash.templatedir = "/srv/gdash/graph_templates"
 
-case node.platform_family
-  when "debian"
-    default.gdash.packages = %w( libcurl4-gnutls-dev ruby1.9.1-full )
-    default.gdash.owner = "www-data"
-    default.gdash.group = "www-data"
-  when "rhel"
-    default.gdash.packages = %w( libcurl-devel ruby )
-    default.gdash.owner = "nobody"
-    default.gdash.group = "nobody"
+case platform_family
+when "debian"
+  default.gdash.packages = %w( libcurl4-gnutls-dev ruby1.9.1-full )
+  default.gdash.owner = "www-data"
+  default.gdash.group = "www-data"
+when "rhel"
+  default.gdash.packages = %w( libcurl-devel ruby ruby-devel rubygems )
+  default.gdash.owner = "nobody"
+  default.gdash.group = "nobody"
 end
 
 default.gdash.basic_auth = false
