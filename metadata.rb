@@ -11,7 +11,7 @@ recipe  "gdash::firewall", "Iptables rules. Optional, iptables cookbook required
 recipe  "gdash::basic_dashboard", "Sets up simple dashboard, example LWRP usage"
 recipe  "gdash::attribute_driven_dashboard", "Data driven dashboard via attributes"
 
-%w{ debian ubuntu }.each do |os|
+%w{ debian ubuntu centos rhel }.each do |os|
   supports os
 end
 
