@@ -13,20 +13,12 @@
   :graph_height: 250
   :whisper_dir: <%= node.gdash.graphite_whisperdb %>
   :interval_filters:
-    - :label: Last Hour
-      :from: -1hour
-      :to: now
-    - :label: Last Day
-      :from: -1day
-    - :label: Last Week
-      :from: -1week
-    - :label: Last Month
-      :from: -1month
-    - :label: Last Year
-      :from: -1year
+  <% node.gdash.interval_filters.each do |interval| %>
+    - :label: <%= interval[:label] %>
+      :from: <%= interval[:from] %>
+      :to: <%= interval[:to] || "now" %>
+  <% end %>
   :intervals:
-    - [ "-1hour", "1 hour" ]
-    - [ "-2hour", "2 hour" ]
-    - [ "-1day", "1 day" ]
-    - [ "-1month", "1 month" ]
-    - [ "-1year", "1 year" ]
+  <% node.gdash.intervals.each do |interval| %>
+    - [ "<%= interval[:from] %>", "<%= interval[:label] %>" ]
+  <% end %>
