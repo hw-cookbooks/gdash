@@ -9,8 +9,8 @@
   :prefix: <%= node.gdash.prefix %>
   :refresh_rate: <%= node.gdash.refresh_rate %>
   :graph_columns: <%= node.gdash.columns %>
-  :graph_width: 500
-  :graph_height: 250
+  :graph_width: <%= node.gdash.graph_width %>
+  :graph_height: <%= node.gdash.graph_height %>
   :whisper_dir: <%= node.gdash.graphite_whisperdb %>
   :interval_filters:
   <% node.gdash.interval_filters.each do |interval| %>
