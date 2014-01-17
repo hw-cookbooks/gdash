@@ -41,7 +41,8 @@ action :create do
       :base_variables => template_hash,
       :fields => new_resource.fields || {},
       :lines => new_resource.lines || [],
-      :forecasts => new_resource.forecasts || {}
+      :forecasts => new_resource.forecasts || {},
+      :groups => new_resource.groups || {}
     )
     action :create
   end

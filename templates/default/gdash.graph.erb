@@ -15,3 +15,7 @@ line <%= line_hash.inspect.gsub(/{|}/, '') %>
 <% @forecasts.each_pair do |name, info| %>
 forecast '<%= name %>', <%= info.inspect %>
 <% end %>
+
+<% @groups.each_pair do |name, info| %>
+group '<%= name %>', <%= info.inspect %>
+<% end %>
