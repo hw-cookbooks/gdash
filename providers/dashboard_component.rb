@@ -36,7 +36,7 @@ action :create do
 
     owner node.gdash.owner
     group node.gdash.group
-    mode 0644
+    mode '0644'
     variables(
       :base_variables => template_hash,
       :fields => new_resource.fields || {},
