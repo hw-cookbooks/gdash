@@ -1,6 +1,6 @@
 def load_current_resource
-  node.include_attribute "gdash::gdash"
-  node.run_context.include_recipe "gdash::default"
+  node.include_attribute 'gdash::gdash'
+  node.run_context.include_recipe 'gdash::default'
 
   @dashboard_dir = ::File.join(
     node.gdash.templatedir,

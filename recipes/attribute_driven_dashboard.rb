@@ -1,4 +1,4 @@
-include_recipe "gdash::default"
+include_recipe 'gdash::default'
 
 node['gdash']['dashboards'].each_pair do |dashboard_name, dashboard_config|
 
@@ -44,7 +44,7 @@ node['gdash']['dashboards'].each_pair do |dashboard_name, dashboard_config|
   template_dir = "#{node['gdash']['templatedir']}/#{dashboard_category}/#{dashboard_name}"
   ::Dir.entries(template_dir).each do |entry|
     graph_file = "#{template_dir}/#{entry}"
-    if ::File.file?(graph_file) && graph_file =~ /.*\.graph$/ && !components.keys.include?(File.basename(entry, ".graph"))
+    if ::File.file?(graph_file) && graph_file =~ /.*\.graph$/ && !components.keys.include?(File.basename(entry, '.graph'))
       file graph_file do
         action :delete
         backup false
@@ -55,7 +55,7 @@ node['gdash']['dashboards'].each_pair do |dashboard_name, dashboard_config|
 
 end
 
-categories = node['gdash']['dashboards'].values.collect { |dashboard_config| dashboard_config['category'] }
+categories = node['gdash']['dashboards'].values.map { |dashboard_config| dashboard_config['category'] }
 ::Dir.entries(node['gdash']['templatedir']).each do |category|
   if category != '.' && category != '..'
     category_dir = "#{node['gdash']['templatedir']}/#{category}"
