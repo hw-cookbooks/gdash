@@ -1,6 +1,6 @@
 def load_current_resource
-  node.include_attribute "gdash::gdash"
-  node.run_context.include_recipe "gdash::default"
+  node.include_attribute 'gdash::gdash'
+  node.run_context.include_recipe 'gdash::default'
 
   @dashboard_dir = ::File.join(
     node.gdash.templatedir,
@@ -36,7 +36,7 @@ action :create do
 
     owner node.gdash.owner
     group node.gdash.group
-    mode 0644
+    mode '0644'
     variables(
       :base_variables => template_hash,
       :fields => new_resource.fields || {},
