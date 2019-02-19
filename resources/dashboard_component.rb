@@ -8,7 +8,7 @@ actions :create, :delete
 
 attribute :lines, :kind_of => Array, :required => false
 
-%w(forecasts fields).each do |attr_hash|
+%w(forecasts fields groups).each do |attr_hash|
   attribute attr_hash, :kind_of => Hash, :required => false
 end
 
