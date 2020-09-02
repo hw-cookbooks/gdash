@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: gdash
+# Cookbook:: gdash
 # Attributes:: gdash
 #
-# Copyright 2013-2014, Heavy Water, Inc
+# Copyright:: 2013-2014, Heavy Water, Inc
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,6 +41,6 @@ default.gdash.refresh_rate = 60
 default.gdash.columns = 2
 default.gdash.graphite_whisperdb = '/opt/graphite/storage/whisper'
 default.gdash.port = 9292
-default.gdash.interface = node[:ipaddress]
+default.gdash.interface = node['ipaddress']
 default.gdash.categories = []
 default.gdash.dashboards = Mash.new

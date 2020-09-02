@@ -12,15 +12,14 @@ def load_current_resource
 end
 
 action :create do
-
-  @dashboard_dir.sub("#{node.gdash.templatedir}/", '').split('/').inject([node.gdash.templatedir]){|memo,val|
+  @dashboard_dir.sub("#{node.gdash.templatedir}/", '').split('/').inject([node.gdash.templatedir]) do |memo, val|
     memo.push(::File.join(memo.last, val))
-  }.each do |dir_path|
+  end.each do |dir_path|
     directory dir_path do
       owner node.gdash.owner
       group node.gdash.group
       recursive true
-      notifies :restart, resources(:service => 'gdash'), :delayed
+      notifies :restart, 'service[gdash]', :delayed
     end
   end
 
@@ -28,18 +27,16 @@ action :create do
     owner node.gdash.owner
     group node.gdash.group
     content YAML.dump(
-      :name => new_resource.display_name || new_resource.name,
-      :description => new_resource.description,
-      :graph_properties => new_resource.graph_properties
+      name: new_resource.display_name || new_resource.name,
+      description: new_resource.description,
+      graph_properties: new_resource.graph_properties
     )
   end
 
   new_resource.updated_by_last_action(true)
-
 end
 
 action :delete do
-
   directory @dashboard_dir do
     action :delete
   end
@@ -49,5 +46,4 @@ action :delete do
   end
 
   new_resource.updated_by_last_action(true)
-
 end
