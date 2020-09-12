@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: gdash
+# Cookbook:: gdash
 # Recipe:: default
 #
-# Copyright 2012, Sean Escriva <sean.escriva@gmail.com>
+# Copyright:: 2012, Sean Escriva <sean.escriva@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-include_recipe 'build-essential'
+build_essential 'install compilation tools'
 include_recipe 'unicorn'
 include_recipe 'runit'
 
@@ -60,10 +60,10 @@ ruby_block 'bundle_unicorn' do
     gemfile.insert_line_if_no_match(/unicorn/, 'gem "unicorn"')
     gemfile.write_file
   end
-  notifies :run, resources(:execute => 'bundle'), :immediately
+  notifies :run, 'execute[bundle]', :immediately
   not_if do
     File.exist?(File.join(node.gdash.base, 'Gemfile')) &&
-    File.read(File.join(node.gdash.base, 'Gemfile')).include?('unicorn')
+      File.read(File.join(node.gdash.base, 'Gemfile')).include?('unicorn')
   end
   action :nothing
 end
@@ -78,8 +78,8 @@ execute 'gdash: untar' do
   creates File.join(node.gdash.base, 'Gemfile.lock')
   user 'www-data'
   group 'www-data'
-  notifies :create, resources(:ruby_block => 'bundle_unicorn'), :immediately
-  notifies :delete, resources(:directory => File.join(node.gdash.base, 'graph_templates', 'dashboards')), :immediately
+  notifies :create, 'ruby_block[bundle_unicorn]', :immediately
+  notifies :delete, "directory[#{File.join(node.gdash.base, 'graph_templates', 'dashboards')}]", :immediately
 end
 
 template File.join(node.gdash.base, 'config', 'gdash.yaml') do
@@ -90,7 +90,7 @@ end
 
 unicorn_config '/etc/unicorn/gdash.app' do
   working_directory node.gdash.base
-  listen(node.gdash.port => { :backlog => 100 })
+  listen(node.gdash.port => { backlog: 100 })
   worker_timeout 60
   preload_app false
   worker_processes 2
