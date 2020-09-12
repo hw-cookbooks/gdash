@@ -1,7 +1,6 @@
 include_recipe 'gdash::default'
 
 node['gdash']['dashboards'].each_pair do |dashboard_name, dashboard_config|
-
   dashboard_category = dashboard_config['category']
   gdash_dashboard dashboard_name do
     display_name dashboard_config['display_name'] if dashboard_config['display_name']
@@ -44,38 +43,34 @@ node['gdash']['dashboards'].each_pair do |dashboard_name, dashboard_config|
   template_dir = "#{node['gdash']['templatedir']}/#{dashboard_category}/#{dashboard_name}"
   ::Dir.entries(template_dir).each do |entry|
     graph_file = "#{template_dir}/#{entry}"
-    if ::File.file?(graph_file) && graph_file =~ /.*\.graph$/ && !components.keys.include?(File.basename(entry, '.graph'))
-      file graph_file do
-        action :delete
-        backup false
-        notifies :restart, resources(:service => 'gdash'), :delayed
-      end
+    next unless ::File.file?(graph_file) && graph_file =~ /.*\.graph$/ && !components.keys.include?(File.basename(entry, '.graph'))
+    file graph_file do
+      action :delete
+      backup false
+      notifies :restart, 'service[gdash]', :delayed
     end
   end if File.exist?(template_dir)
-
 end
 
 categories = node['gdash']['dashboards'].values.map { |dashboard_config| dashboard_config['category'] }
 ::Dir.entries(node['gdash']['templatedir']).each do |category|
-  if category != '.' && category != '..'
-    category_dir = "#{node['gdash']['templatedir']}/#{category}"
-    if categories.include?(category)
-      ::Dir.entries(category_dir).each do |entry|
-        dashboard_dir = "#{category_dir}/#{entry}"
-        if ::File.directory?(dashboard_dir) && entry != '.' && entry != '..' && (node['gdash']['dashboards'][entry].nil? || category != node['gdash']['dashboards'][entry]['category'])
-          directory dashboard_dir do
-            action :delete
-            recursive true
-            notifies :restart, resources(:service => 'gdash'), :delayed
-          end
-        end
-      end
-    else
-      directory category_dir do
+  next unless category != '.' && category != '..'
+  category_dir = "#{node['gdash']['templatedir']}/#{category}"
+  if categories.include?(category)
+    ::Dir.entries(category_dir).each do |entry|
+      dashboard_dir = "#{category_dir}/#{entry}"
+      next unless ::File.directory?(dashboard_dir) && entry != '.' && entry != '..' && (node['gdash']['dashboards'][entry].nil? || category != node['gdash']['dashboards'][entry]['category'])
+      directory dashboard_dir do
         action :delete
         recursive true
-        notifies :restart, resources(:service => 'gdash'), :delayed
+        notifies :restart, 'service[gdash]', :delayed
       end
+    end
+  else
+    directory category_dir do
+      action :delete
+      recursive true
+      notifies :restart, 'service[gdash]', :delayed
     end
   end
 end if File.exist?(node['gdash']['templatedir'])
