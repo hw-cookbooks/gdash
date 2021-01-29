@@ -33,8 +33,8 @@ node['gdash']['dashboards'].each_pair do |dashboard_name, dashboard_config|
             end
             fields fields
           end
-        else
-          send(key.to_sym, component_config[key]) if component_config[key]
+        elsif component_config[key]
+          send(key.to_sym, component_config[key])
         end
       end
     end
